@@ -1,13 +1,30 @@
 <head>
-  <title>simplechat</title>
+  <title>SimpleChat</title>
+  <meta property="og:title" content="SimpleChat"/>
+  <meta property="og:url" content="http://sc.meteor.com"/>
+  <meta property="og:description" content="Simple chat application written in meteor."/>
 </head>
 
 <body>
-  {{> hello}}
+  <div id="main">
+    <h1 id="title">SimpleChat</h1>
+    {{> chat}}
+  </div>
 </body>
 
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+<template name="chat">
+  <div id="chat_window">
+    <div id="chat">
+      {{#each messages}}
+        <div>
+          <span class="time">{{formatted_date}}</span>
+          <span class="msg">{{text}}</span>
+          <div class='clearfix' />
+        </div>
+      {{/each}}
+    </div>
+  </div>
+  <form id="input_form">
+    <input type="text" id="input" placeholder="Enter Message" />
+  </form>
 </template>

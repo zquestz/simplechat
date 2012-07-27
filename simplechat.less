@@ -1,0 +1,89 @@
+body {
+  background-color: #eee;
+  font-family: Helvetica, Verdana, sans-serif;
+}
+
+.clearfix {
+  clear: both;
+}
+
+#main {
+  margin-top: 25px;
+
+  #chat_window {
+    width: 825px;
+    margin: 6px auto;
+
+    #chat {
+      background-color: white;
+      border: 3px solid #ddd;
+      -moz-border-radius: 5px; 
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      width: 804px;
+      height: 400px;
+      padding: 10px 15px 10px 0;
+      overflow: auto;
+      color: #222;
+
+      div {
+        display: block;
+        padding-bottom: 5px;
+
+        span {
+          &.time {
+            display: inline-block;
+            padding-top: 3px;
+            font-size: 12px;
+            width: 60px;
+            color: #aaa;
+            text-align: right;
+            margin-right: 15px;
+            float: left;
+            vertical-align: top;
+          }
+
+          &.msg {
+            float: left;
+            width: 700px;
+          }
+        }
+      }
+    }
+
+    #users {
+      background-color: white;
+      border: 3px solid #ddd;
+      -moz-border-radius: 5px; 
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      width: 150px;
+      height: 400px;
+      padding: 15px 15px 5px;
+      float: right;
+    }
+  }
+
+  h1#title {
+    display: block;
+    margin: auto;
+    width: 820px;
+    color: #999;
+  }
+
+  #input {
+    display: block;
+    margin: auto;
+    border: 3px solid #ddd;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    width: 810px;
+    padding: 5px;
+    font-size: 18px;
+  }  
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
