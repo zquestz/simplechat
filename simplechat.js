@@ -102,6 +102,10 @@ if (Meteor.is_server) {
 
   Meteor.methods({
     keepalive: function (user) {
+      if (user == null) {
+        return;
+      }
+      
       var now = (new Date()).getTime();
 
       if (!Users.findOne({name: user})) {
