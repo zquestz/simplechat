@@ -20,6 +20,14 @@ if (Meteor.is_client) {
 
   Template.register.signed_in = Template.chat.signed_in = function () {
     var logged_in = (Session.get("user") ? true : false);
+
+    if (logged_in) {
+      Meteor.defer(function () {
+        var new_size = 25 * Messages.find().count();
+        $('#chat').animate({ scrollTop: new_size }, 1);
+        $('#input').focus();
+      });
+    } 
     return logged_in;
   };
 
@@ -87,6 +95,10 @@ if (Meteor.is_client) {
     var username = Session.get('user');
     Meteor.call('keepalive', username);
   }, 5000);
+
+  Meteor.startup(function () {
+    $('#register').focus();
+  });
 }
 
 if (Meteor.is_server) {
@@ -105,7 +117,7 @@ if (Meteor.is_server) {
       if (user == null) {
         return;
       }
-      
+
       var now = (new Date()).getTime();
 
       if (!Users.findOne({name: user})) {
