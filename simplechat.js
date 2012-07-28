@@ -10,14 +10,14 @@ if (Meteor.is_client) {
         $('#chat').animate({ scrollTop: new_size }, 1);
       }
     });
-    if (Session.get("scroll")) {
-      Meteor.defer(function () {
+    Meteor.defer(function () {
+      if (Session.equals("scroll", true)) {
         var new_size = 25 * Messages.find().count();
         $('#chat').animate({ scrollTop: new_size }, 1);
         $('#input').focus();
         Session.set("scroll", false);
-      });
-    }
+      }
+    });
     return messages;
   };
 
