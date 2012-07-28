@@ -77,7 +77,7 @@ if (Meteor.is_client) {
       }
 
       if (minutes < 10) {
-        minutes = "0" + minutes
+        minutes = "0" + minutes;
       }
 
       var formatted_date = hours + ":" + minutes + " " + suffix;
@@ -93,7 +93,9 @@ if (Meteor.is_client) {
 
   Meteor.setInterval(function () {
     var username = Session.get('user');
-    Meteor.call('keepalive', username);
+    if (username) {
+      Meteor.call('keepalive', username);
+    }
   }, 5000);
 
   Meteor.startup(function () {
@@ -108,23 +110,19 @@ if (Meteor.is_server) {
     var now = (new Date()).getTime();
 
     Users.find({last_seen: {$lt: (now - 60 * 1000)}}).forEach(function (user) {
-      Users.remove(user._id)
+      Users.remove(user._id);
     });
   });
 
   Meteor.methods({
     keepalive: function (user) {
-      if (user == null) {
-        return;
-      }
-
       var now = (new Date()).getTime();
 
       if (!Users.findOne({name: user})) {
         Users.insert({name: user, last_seen: now});
+      } else {
+        Users.update({name: user}, {$set: {last_seen: now}});
       }
-
-      Users.update({name: user}, {$set: {last_seen: now}});
     }
   });
 }
