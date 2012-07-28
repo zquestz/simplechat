@@ -6,18 +6,17 @@ if (Meteor.is_client) {
     var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true}, formatted_date: { $exists: true} }, { sort: {date: 1} });
     var handle = messages.observe({
       added: function (message) {
-        var new_size = 25 * Messages.find().count();
-        $('#chat').animate({ scrollTop: new_size }, 1);
+        $('#chat').animate({ scrollTop: 9999999999 }, 1);        
       }
     });
-    Meteor.defer(function () {
-      if (Session.equals("scroll", true)) {
-        var new_size = 25 * Messages.find().count();
-        $('#chat').animate({ scrollTop: new_size }, 1);
+    
+    if (Session.equals("focus", true)) {
+      Meteor.defer(function () {
+        Session.set("focus", false);
         $('#input').focus();
-        Session.set("scroll", false);
-      }
-    });
+      });
+    }
+
     return messages;
   };
 
@@ -50,7 +49,7 @@ if (Meteor.is_client) {
       } else {
         Session.set('warning', null);
         Session.set("user", username);
-        Session.set("scroll", true);
+        Session.set("focus", true);
         Users.insert({name: username, last_seen: now});
       }      
       
