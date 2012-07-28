@@ -6,7 +6,8 @@ if (Meteor.is_client) {
     var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true}, formatted_date: { $exists: true} }, { sort: {date: 1} });
     var handle = messages.observe({
       added: function (message) {
-        $('#chat').animate({ scrollTop: 9999999999 }, 1);        
+        $('#chat').stop();
+        $('#chat').animate({ scrollTop: 9999999999 }, 10);        
       }
     });
     
