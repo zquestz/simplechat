@@ -62,7 +62,7 @@ if (Meteor.is_client) {
   Template.chat.events = {
     'submit form': function (event) {
       var inputbox = $('#input'),
-          new_message = inputbox.val(),
+          new_message = inputbox.val().replace(/\n/g, '<br />'),
           date = new Date(),
           hours = date.getHours(),
           minutes = date.getMinutes(),
@@ -83,8 +83,10 @@ if (Meteor.is_client) {
 
       var formatted_date = hours + ":" + minutes + " " + suffix;
 
-      Messages.insert({user: Session.get("user"), text: new_message, date: date, formatted_date: formatted_date});
-      
+      if (new_message !== '') {
+        Messages.insert({user: Session.get("user"), text: new_message, date: date, formatted_date: formatted_date});
+      }
+
       inputbox.val('');
 
       event.preventDefault();
