@@ -8,16 +8,35 @@
 <body>
   <div id="main">
     <h1 id="title">SimpleChat</h1>
+    {{> register}}
     {{> chat}}
   </div>
 </body>
 
+<template name="register">
+  {{#unless signed_in}}
+  <div id="register_window">
+    <form id="register_form">
+      <div id="warning">{{warning}}</div>
+      <label>Username: </label>
+      <input type="text" id="register" placeholder="Enter Username" />
+    </form>
+  </div>
+  {{/unless}}
+</template>
+
 <template name="chat">
+  {{#if signed_in}}
   <div id="chat_window">
+    <div id="users">
+      {{#each users}}
+        {{name}}<br />
+      {{/each}}
+    </div>
     <div id="chat">
       {{#each messages}}
         <div>
-          <span class="time">{{formatted_date}}</span>
+          <span class="sidebar"><span class="time">{{formatted_date}}</span><span class="user">&lt;{{user}}&gt;</span></span>
           <span class="msg">{{text}}</span>
           <div class='clearfix' />
         </div>
@@ -27,4 +46,5 @@
   <form id="input_form">
     <input type="text" id="input" placeholder="Enter Message" />
   </form>
+  {{/if}}
 </template>

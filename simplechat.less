@@ -10,6 +10,34 @@ body {
 #main {
   margin-top: 25px;
 
+  #register_window {
+    width: 780px;
+    margin: 6px auto;
+    border: 3px solid #ddd;
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background: white;
+    padding: 10px 20px 20px;
+    color: #222;
+
+    #warning {
+      color: red;
+      margin: 10px 0;
+    }
+
+    #register {
+      border: 2px solid #ddd;
+      -moz-border-radius: 5px; 
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      width: 150px;
+      padding: 5px;
+      font-size: 18px;
+      margin-left: 10px;
+    }  
+  }
+
   #chat_window {
     width: 825px;
     margin: 6px auto;
@@ -20,32 +48,42 @@ body {
       -moz-border-radius: 5px; 
       -webkit-border-radius: 5px;
       border-radius: 5px;
-      width: 804px;
+      width: 638px;
       height: 400px;
-      padding: 10px 15px 10px 0;
+      padding: 10px 15px 5px 5px;
       overflow: auto;
       color: #222;
+      font-size: 14px;
 
       div {
         display: block;
-        padding-bottom: 5px;
+        padding-bottom: 3px;
 
         span {
-          &.time {
+          &.sidebar {
             display: inline-block;
-            padding-top: 3px;
+            padding-top: 1px;
             font-size: 12px;
-            width: 60px;
             color: #aaa;
-            text-align: right;
-            margin-right: 15px;
+            text-align: left;
+            margin-right: 10px;
             float: left;
             vertical-align: top;
           }
 
           &.msg {
+            width: 77%;
             float: left;
-            width: 700px;
+          }
+
+          &.time {
+            text-align: left;
+            margin-right: 5px;
+          }
+
+          &.user {
+            color: #800000;
+            text-align: right;
           }
         }
       }
@@ -57,10 +95,13 @@ body {
       -moz-border-radius: 5px; 
       -webkit-border-radius: 5px;
       border-radius: 5px;
-      width: 150px;
+      width: 130px;
       height: 400px;
-      padding: 15px 15px 5px;
+      padding: 10px 10px 5px;
       float: right;
+      line-height: 18px;
+      color: #800000;
+      font-size: 14px;
     }
   }
 
