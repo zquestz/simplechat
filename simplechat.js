@@ -15,7 +15,7 @@ if (Meteor.is_client) {
         var new_size = 25 * Messages.find().count();
         $('#chat').animate({ scrollTop: new_size }, 1);
         $('#input').focus();
-        Session.unset("scroll");
+        Session.set("scroll", false);
       });
     }
     return messages;
