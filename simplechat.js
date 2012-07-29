@@ -109,6 +109,8 @@ if (Meteor.is_client) {
           username = registerbox.val(),
           now = (new Date()).getTime();
 
+      Meteor.flush();
+
       if (Template.register.warning() === "") {
         var user_id = Users.insert({name: username, last_seen: now});
         Session.set("user_id", user_id);
