@@ -110,10 +110,14 @@ if (Meteor.is_client) {
           now = (new Date()).getTime();
 
       if (Template.register.warning() === "") {
-        var user_id = Users.insert({name: username, last_seen: now});
-        Session.set("user_id", user_id);
-        Session.set('user', username);
-        Session.set("init_chat", true);
+        Meteor.call('add_user', username, function (error, result) {
+          if (error) {
+            alert(error);
+          } else {
+            Session.set("user_id", result);
+            Session.set("init_chat", true);
+          }
+        });
       }      
       
       event.preventDefault();
@@ -152,7 +156,7 @@ if (Meteor.is_client) {
 
 if (Meteor.is_server) {
   function disableClientMongo() {
-    _.each(['messages'], function(collection) {
+    _.each(['messages', 'users'], function(collection) {
       _.each(['insert', 'update', 'remove'], function(method) {
         Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
       });
@@ -177,9 +181,6 @@ if (Meteor.is_server) {
     date.setSeconds(date.getSeconds() + 10);
 
     Users.remove({last_seen: {$lt: (now - 60 * 1000)}});
-    Users.remove({last_seen: {$gt: (now + 30)}});
-    Users.remove({last_seen: {$exists: false}});
-    Messages.remove({date: {$gt: date.toISOString()}});
   }, 1000);
 
   Meteor.methods({
@@ -194,6 +195,11 @@ if (Meteor.is_server) {
       if (user = Users.findOne(user_id)) {
         Messages.insert({user: user.name, text: msg, date: new Date()});
       }
+    },
+    add_user: function(username) {
+      var now = (new Date()).getTime();
+      var user_id = Users.insert({name: username, last_seen: now});
+      return user_id;
     }
   });
 }
