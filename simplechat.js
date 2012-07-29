@@ -163,11 +163,13 @@ if (Meteor.is_server) {
 
   Meteor.setInterval(function () {
     var now = (new Date()).getTime();
+    var date = (new Date());
+    date.setSeconds(date.getSeconds() + 10);
 
     Users.remove({last_seen: {$lt: (now - 60 * 1000)}});
     Users.remove({last_seen: {$gt: (now + 30)}});
     Users.remove({last_seen: {$exists: false}});
-    Messages.remove({date: {$gt: new Date().toISOString()}});
+    Messages.remove({date: {$gt: date.toISOString()}});
   }, 1000);
 
   Meteor.methods({
