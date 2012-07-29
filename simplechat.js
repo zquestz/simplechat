@@ -77,6 +77,8 @@ if (Meteor.is_client) {
 
     if (username === "") {
       warning = 'Please enter a valid username.';
+    } else if (username === undefined) {
+      warning = 'An error occurred. Please try again.'
     } else if (Users.findOne({name: username})) {
       warning = 'Username is already taken. Please choose another.';
     } else if (username.length > 9) {
@@ -126,7 +128,7 @@ if (Meteor.is_client) {
     if (username) {
       Meteor.call('keepalive', username);
     }
-  }, 5000);
+  }, 1000);
 
   Meteor.startup(function () {
     $('#register').focus();
