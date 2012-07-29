@@ -66,8 +66,21 @@ if (Meteor.is_client) {
   };
 
   Template.register.signed_in = Template.chat.signed_in = function () {
-    var logged_in = (Session.get("user") ? true : false);
-    return logged_in;
+    var user_id = Session.get("user_id"),
+        verified = Session.get("verified");
+
+    if (verified) {
+      return true;
+    }
+
+    if (user_id) {
+      if (Users.findOne(user_id)) {
+        Session.set("verified", true);
+        return true;
+      }
+    }
+
+    return false;
   };
 
   Template.register.warning = function () {
@@ -97,7 +110,9 @@ if (Meteor.is_client) {
           now = (new Date()).getTime();
 
       if (Template.register.warning() === "") {
-        Session.set("user", username);
+        var user_id = Users.insert({name: username, last_seen: now});
+        Session.set("user_id", user_id);
+        Session.set('user', username);
         Session.set("init_chat", true);
       }      
       
@@ -124,9 +139,9 @@ if (Meteor.is_client) {
   };
 
   Meteor.setInterval(function () {
-    var username = Session.get('user');
-    if (username) {
-      Meteor.call('keepalive', username);
+    var user_id = Session.get('user_id');
+    if (user_id) {
+      Meteor.call('keepalive', user_id);
     }
   }, 1000);
 
@@ -155,13 +170,11 @@ if (Meteor.is_server) {
   });
 
   Meteor.methods({
-    keepalive: function (user) {
+    keepalive: function (user_id) {
       var now = (new Date()).getTime();
 
-      if (!Users.findOne({name: user})) {
-        Users.insert({name: user, last_seen: now});
-      } else {
-        Users.update({name: user}, {$set: {last_seen: now}});
+      if (Users.findOne(user_id)) {
+        Users.update(user_id, {$set: {last_seen: now}});
       }
     }
   });
