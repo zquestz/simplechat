@@ -165,9 +165,8 @@ if (Meteor.is_server) {
     var now = (new Date()).getTime();
 
     Users.remove({last_seen: {$lt: (now - 60 * 1000)}});
-    Messages.find({date: {$gt: new Date()}}).forEach(function (message) {
-      Messages.update(message._id, {$set: {date: new Date()}});
-    });
+    Users.remove({last_seen: {$gt: (now + 30)}});
+    Users.remove({last_seen: {$exists: false}});
   }, 1000);
 
   Meteor.methods({
