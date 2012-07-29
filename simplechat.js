@@ -1,5 +1,6 @@
 Messages = new Meteor.Collection("messages");
 Users = new Meteor.Collection("users");
+scrollTimer = null;
 
 if (Meteor.is_client) {
   Meteor.subscribe("messages");
@@ -9,20 +10,29 @@ if (Meteor.is_client) {
     var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true} }, { sort: {date: 1} });
     var handle = messages.observe({
       added: function (message) {
-        $('#chat').stop();
-        $('#chat').animate({ scrollTop: 99999999 }, 10);        
+        Template.chat.scroll();
       }
     });
     
-    if (Session.equals("focus", true)) {
+    if (Session.equals("init_chat", true)) {
       Meteor.defer(function () {
-        Session.set("focus", false);
+        Session.set("init_chat", false);
         $('#input').focus();
+        Template.chat.scroll();
       });
     }
 
     return messages;
   };
+
+  Template.chat.scroll = function() {
+    clearTimeout(scrollTimer);
+
+    scrollTimer = setTimeout(function () {
+      $('#chat').stop();
+      $('#chat').animate({ scrollTop: 99999999 }, 10);
+    }, 50);
+  }
 
   Template.chat.formatted_date = function(date) {
     if (date.constructor === String) {
@@ -86,7 +96,7 @@ if (Meteor.is_client) {
 
       if (Template.register.warning() === "") {
         Session.set("user", username);
-        Session.set("focus", true);
+        Session.set("init_chat", true);
         Users.insert({name: username, last_seen: now});
       }      
       
