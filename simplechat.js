@@ -58,7 +58,21 @@ if (Meteor.is_client) {
   };
 
   Template.register.warning = function () {
-    return Session.get('warning');
+    var registerbox = $('#register'),
+        username = registerbox.val(),
+        warning = "";
+
+    if (username === "") {
+      warning = 'Please enter a valid username.';
+    } else if (Users.findOne({name: username})) {
+      warning = 'Username is already taken. Please choose another.';
+    } else if (username.length > 9) {
+      warning = 'Username is too long. Please choose a username under 9 characters.';
+    }
+
+    $('#warning').text(warning);
+
+    return warning;
   };
 
   Template.register.events = {
@@ -67,14 +81,7 @@ if (Meteor.is_client) {
           username = registerbox.val(),
           now = (new Date()).getTime();
 
-      if (username === "") {
-        Session.set('warning', 'Please enter a valid username.');
-      } else if (Users.findOne({name: username})) {
-        Session.set('warning', 'Username is already taken. Please choose another.');
-      } else if (username.length > 9) {
-        Session.set('warning', 'Username is too long. Please choose a username under 9 characters.');
-      } else {
-        Session.set('warning', null);
+      if (Template.register.warning() === "") {
         Session.set("user", username);
         Session.set("focus", true);
         Users.insert({name: username, last_seen: now});
