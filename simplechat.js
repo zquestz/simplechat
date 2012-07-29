@@ -167,7 +167,7 @@ if (Meteor.is_server) {
     Users.remove({last_seen: {$lt: (now - 60 * 1000)}});
     Users.remove({last_seen: {$gt: (now + 30)}});
     Users.remove({last_seen: {$exists: false}});
-    Messages.remove({date: {$gt: new Date()}});
+    Messages.remove({date: {$gt: new Date().toISOString()}});
   }, 1000);
 
   Meteor.methods({
