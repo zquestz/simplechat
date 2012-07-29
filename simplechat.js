@@ -7,7 +7,7 @@ if (Meteor.is_client) {
     var handle = messages.observe({
       added: function (message) {
         $('#chat').stop();
-        $('#chat').animate({ scrollTop: 9999999999 }, 10);        
+        $('#chat').animate({ scrollTop: 99999999 }, 10);        
       }
     });
     
@@ -22,27 +22,29 @@ if (Meteor.is_client) {
   };
 
   Template.chat.formatted_date = function(date) {
-    var date = new Date(date)
-    date.setHours(date.getHours() - 7);
+    if (date.constructor === String) {
+      var date = new Date(date);
+      date.setHours(date.getHours() - 7);
 
-    var hours = date.getUTCHours(),
-        minutes = date.getUTCMinutes(),
-        suffix = "AM";
+      var hours = date.getUTCHours(),
+          minutes = date.getUTCMinutes(),
+          suffix = "AM";
 
-    if (hours >= 12) {
-      suffix = "PM";
-      hours = hours - 12;
+      if (hours >= 12) {
+        suffix = "PM";
+        hours -= 12;
+      }
+
+      if (hours == 0) {
+        hours = 12;
+      }
+
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+
+      return (hours + ":" + minutes + " " + suffix);
     }
-
-    if (hours == 0) {
-      hours = 12;
-    }
-
-    if (minutes < 10) {
-      minutes = "0" + minutes;
-    }
-
-    return (hours + ":" + minutes + " " + suffix);
   };
 
   Template.chat.users = function () {
