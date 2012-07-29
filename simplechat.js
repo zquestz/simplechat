@@ -2,6 +2,9 @@ Messages = new Meteor.Collection("messages");
 Users = new Meteor.Collection("users");
 
 if (Meteor.is_client) {
+  Meteor.subscribe("messages");
+  Meteor.subscribe("users");
+
   Template.chat.messages = function () {
     var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true} }, { sort: {date: 1} });
     var handle = messages.observe({
@@ -123,6 +126,14 @@ if (Meteor.is_client) {
 
 if (Meteor.is_server) {
   Meteor.startup(function () {});
+
+  Meteor.publish("messages", function () {
+    return Messages.find({}, {limit: 1024});
+  });
+
+  Meteor.publish("users", function () {
+    return Users.find({}, {limit: 5000});
+  });
 
   Meteor.setInterval(function () {
     var now = (new Date()).getTime();
