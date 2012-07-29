@@ -3,7 +3,7 @@ Users = new Meteor.Collection("users");
 
 if (Meteor.is_client) {
   Template.chat.messages = function () {
-    var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true}, formatted_date: { $exists: true} }, { sort: {date: 1} });
+    var messages = Messages.find({user: { $exists: true }, text: { $exists: true }, date: { $exists: true} }, { sort: {date: 1} });
     var handle = messages.observe({
       added: function (message) {
         $('#chat').stop();
@@ -19,6 +19,30 @@ if (Meteor.is_client) {
     }
 
     return messages;
+  };
+
+  Template.chat.formatted_date = function(date) {
+    var date = new Date(date)
+    date.setHours(date.getHours() - 7);
+
+    var hours = date.getUTCHours(),
+        minutes = date.getUTCMinutes(),
+        suffix = "AM";
+
+    if (hours >= 12) {
+      suffix = "PM";
+      hours = hours - 12;
+    }
+
+    if (hours == 0) {
+      hours = 12;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    return (hours + ":" + minutes + " " + suffix);
   };
 
   Template.chat.users = function () {
@@ -62,29 +86,11 @@ if (Meteor.is_client) {
   Template.chat.events = {
     'submit form': function (event) {
       var inputbox = $('#input'),
-          new_message = inputbox.val().replace(/\n/g, '<br />'),
-          date = new Date(),
-          hours = date.getHours(),
-          minutes = date.getMinutes(),
-          suffix = "AM";
-
-      if (hours >= 12) {
-        suffix = "PM";
-        hours = hours - 12;
-      }
-      
-      if (hours == 0) {
-        hours = 12;
-      }
-
-      if (minutes < 10) {
-        minutes = "0" + minutes;
-      }
-
-      var formatted_date = hours + ":" + minutes + " " + suffix;
+          new_message = inputbox.val(),
+          date = new Date();
 
       if (new_message !== '') {
-        Messages.insert({user: Session.get("user"), text: new_message, date: date, formatted_date: formatted_date});
+        Messages.insert({user: Session.get("user"), text: new_message, date: date});
       }
 
       inputbox.val('');
