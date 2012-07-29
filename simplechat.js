@@ -128,7 +128,7 @@ if (Meteor.is_client) {
           date = new Date();
 
       if (new_message !== '') {
-        Messages.insert({user: Session.get("user"), text: new_message, date: date});
+        Meteor.call('add_msg', Session.get("user_id"), new_message);
       }
 
       inputbox.val('');
@@ -151,7 +151,17 @@ if (Meteor.is_client) {
 }
 
 if (Meteor.is_server) {
-  Meteor.startup(function () {});
+  function disableClientMongo() {
+    _.each(['messages'], function(collection) {
+      _.each(['insert', 'update', 'remove'], function(method) {
+        Meteor.default_server.method_handlers['/' + collection + '/' + method] = function() {};
+      });
+    });
+  };
+
+  Meteor.startup(function () {
+    disableClientMongo();
+  });
 
   Meteor.publish("messages", function () {
     return Messages.find({}, {limit: 1024});
@@ -178,6 +188,11 @@ if (Meteor.is_server) {
 
       if (Users.findOne(user_id)) {
         Users.update(user_id, {$set: {last_seen: now}});
+      }
+    },
+    add_msg: function (user_id, msg) {
+      if (user = Users.findOne(user_id)) {
+        Messages.insert({user: user.name, text: msg, date: new Date()});
       }
     }
   });
