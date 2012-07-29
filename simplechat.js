@@ -167,6 +167,10 @@ if (Meteor.is_server) {
     Users.find({last_seen: {$lt: (now - 60 * 1000)}}).forEach(function (user) {
       Users.remove(user._id);
     });
+
+    Messages.find({date: {$gt: (now)}}).forEach(function (message) {
+      Messages.remove(message._id);
+    });
   });
 
   Meteor.methods({
