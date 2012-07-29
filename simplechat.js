@@ -97,7 +97,6 @@ if (Meteor.is_client) {
       if (Template.register.warning() === "") {
         Session.set("user", username);
         Session.set("init_chat", true);
-        Users.insert({name: username, last_seen: now});
       }      
       
       event.preventDefault();
