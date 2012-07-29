@@ -168,7 +168,7 @@ if (Meteor.is_server) {
     Messages.find({date: {$gt: new Date()}}).forEach(function (message) {
       Messages.update(message._id, {$set: {date: new Date()}});
     });
-  });
+  }, 1000);
 
   Meteor.methods({
     keepalive: function (user_id) {
