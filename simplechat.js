@@ -27,7 +27,7 @@ if (Meteor.is_client) {
   Template.chat.formatted_date = function(date) {
     if (date.constructor === String) {
       var date = new Date(date);
-      date.setHours(date.getHours() - 7);
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
 
       var hours = date.getUTCHours(),
           minutes = date.getUTCMinutes(),
