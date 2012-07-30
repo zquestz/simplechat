@@ -67,20 +67,9 @@ if (Meteor.is_client) {
 
   Template.register.signed_in = Template.chat.signed_in = function () {
     var user_id = Session.get("user_id"),
-        verified = Session.get("verified");
+        secret = Session.get("secret");
 
-    if (verified) {
-      return true;
-    }
-
-    if (user_id) {
-      if (Users.findOne(user_id)) {
-        Session.set("verified", true);
-        return true;
-      }
-    }
-
-    return false;
+    return ((user_id && secret) ? true : false);
   };
 
   Template.register.warning = function () {
@@ -104,6 +93,7 @@ if (Meteor.is_client) {
             Template.register.warning();
           } else {
             Session.set("user_id", result.user_id);
+            Session.set("secret", result.secret);
             Session.set("init_chat", true);
           }
         }
@@ -121,7 +111,7 @@ if (Meteor.is_client) {
           date = new Date();
 
       if (new_message !== '') {
-        Meteor.call('add_msg', Session.get("user_id"), new_message);
+        Meteor.call('add_msg', Session.get("user_id"), Session.get("secret"), new_message);
       }
 
       inputbox.val('');
@@ -132,9 +122,11 @@ if (Meteor.is_client) {
   };
 
   Meteor.setInterval(function () {
-    var user_id = Session.get('user_id');
-    if (user_id) {
-      Meteor.call('keepalive', user_id);
+    var user_id = Session.get('user_id'),
+        secret = Session.get('secret');
+
+    if (user_id && secret) {
+      Meteor.call('keepalive', user_id, secret);
     }
   }, 1000);
 
@@ -152,6 +144,11 @@ if (Meteor.is_server) {
     });
   };
 
+  function securityKey () {
+    var key = (new Date()).getTime().toString() + (Math.floor(Math.random() * 1000000000)).toString();
+    return key;
+  };
+
   Meteor.startup(function () {
     disableClientMongo();
   });
@@ -161,7 +158,7 @@ if (Meteor.is_server) {
   });
 
   Meteor.publish("users", function () {
-    return Users.find({}, {limit: 5000});
+    return Users.find({}, {fields: {secret: false}, limit: 5000});
   });
 
   Meteor.setInterval(function () {
@@ -173,15 +170,15 @@ if (Meteor.is_server) {
   }, 1000);
 
   Meteor.methods({
-    keepalive: function (user_id) {
+    keepalive: function (user_id, secret) {
       var now = (new Date()).getTime();
 
-      if (Users.findOne(user_id)) {
+      if (Users.findOne({_id: user_id, secret: secret})) {
         Users.update(user_id, {$set: {last_seen: now}});
       }
     },
-    add_msg: function (user_id, msg) {
-      if (user = Users.findOne(user_id)) {
+    add_msg: function (user_id, secret, msg) {
+      if (user = Users.findOne({_id: user_id, secret: secret})) {
         Messages.insert({user: user.name, text: msg, date: new Date()});
       }
     },
@@ -189,6 +186,7 @@ if (Meteor.is_server) {
       var now = (new Date()).getTime(),
           user_id = null,
           warning = null;
+          secret = securityKey();
       
       if (username === "") {
         warning = 'Please enter a valid username.';
@@ -199,10 +197,10 @@ if (Meteor.is_server) {
       } else if (Users.findOne({name: username})) {
         warning = 'Username is already taken. Please choose another.';
       } else {
-        user_id = Users.insert({name: username, last_seen: now});
+        user_id = Users.insert({name: username, last_seen: now, secret: secret});
       }
 
-      return {user_id: user_id, warning: warning};
+      return {user_id: user_id, secret: secret, warning: warning};
     }
   });
 }
