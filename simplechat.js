@@ -84,23 +84,9 @@ if (Meteor.is_client) {
   };
 
   Template.register.warning = function () {
-    var registerbox = $('#register'),
-        username = registerbox.val(),
-        warning = "";
-
-    if (username === "") {
-      warning = 'Please enter a valid username.';
-    } else if (username === undefined) {
-      warning = 'An error occurred. Please try again.'
-    } else if (Users.findOne({name: username})) {
-      warning = 'Username is already taken. Please choose another.';
-    } else if (username.length > 9) {
-      warning = 'Username is too long. Please choose a username under 9 characters.';
-    }
+    var warning = Session.get('warning');
 
     $('#warning').text(warning);
-
-    return warning;
   };
 
   Template.register.events = {
@@ -109,16 +95,19 @@ if (Meteor.is_client) {
           username = registerbox.val(),
           now = (new Date()).getTime();
 
-      if (Template.register.warning() === "") {
-        Meteor.call('add_user', username, function (error, result) {
-          if (error) {
-            alert(error);
+      Meteor.call('add_user', username, function (error, result) {
+        if (error) {
+          alert(error);
+        } else {
+          if (result.warning) {
+            Session.set("warning", result.warning);
+            Template.register.warning();
           } else {
-            Session.set("user_id", result);
+            Session.set("user_id", result.user_id);
             Session.set("init_chat", true);
           }
-        });
-      }      
+        }
+      });
       
       event.preventDefault();
       event.stopPropagation();
@@ -197,9 +186,23 @@ if (Meteor.is_server) {
       }
     },
     add_user: function(username) {
-      var now = (new Date()).getTime();
-      var user_id = Users.insert({name: username, last_seen: now});
-      return user_id;
+      var now = (new Date()).getTime(),
+          user_id = null,
+          warning = null;
+      
+      if (username === "") {
+        warning = 'Please enter a valid username.';
+      } else if (username === undefined) {
+        warning = 'An error occurred. Please try again.';
+      } else if (username.length > 9) {
+        warning = 'Username is too long. Please choose a username under 9 characters.';
+      } else if (Users.findOne({name: username})) {
+        warning = 'Username is already taken. Please choose another.';
+      } else {
+        user_id = Users.insert({name: username, last_seen: now});
+      }
+
+      return {user_id: user_id, warning: warning};
     }
   });
 }
