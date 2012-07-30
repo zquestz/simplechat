@@ -72,9 +72,7 @@ if (Meteor.is_client) {
     return ((user_id && secret) ? true : false);
   };
 
-  Template.register.warning = function () {
-    var warning = Session.get('warning');
-
+  Template.register.warning = function (warning) {
     $('#warning').text(warning);
   };
 
@@ -89,8 +87,7 @@ if (Meteor.is_client) {
           alert(error);
         } else {
           if (result.warning) {
-            Session.set("warning", result.warning);
-            Template.register.warning();
+            Template.register.warning(result.warning);
           } else {
             Session.set("user_id", result.user_id);
             Session.set("secret", result.secret);
